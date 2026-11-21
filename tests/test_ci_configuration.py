@@ -108,7 +108,8 @@ class TestCIConfiguration(unittest.TestCase):
                 )
                 self.assertEqual(isolate, setup + 1)
                 script = steps[isolate]["run"]
-                self.assertIn("python -m venv .venv", script)
+                self.assertIn("os.environ['RUNNER_TEMP']", script)
+                self.assertIn("'qlib-venv'", script)
                 self.assertIn("GITHUB_PATH", script)
                 self.assertIn("'Scripts' if os.name == 'nt' else 'bin'", script)
                 self.assertIn("python -m pip check", str(steps))
