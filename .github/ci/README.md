@@ -8,9 +8,12 @@ package installed from PyPI. Keep the compatibility bounds in both files in
 sync; `tests/test_ci_configuration.py` checks this.
 
 This is a set of known compatibility bounds, not a fully reproducible Python
-lockfile. The workflows run `pip check` and always print installed versions for
-future diagnosis. They retain all 25 OS/Python combinations per workflow and
-disable matrix fail-fast so that one failure does not hide the others.
+lockfile. Each job installs into a fresh virtual environment so runner-provided
+Python tools such as `pipx` cannot conflict with Qlib's runtime constraints.
+The workflows run `pip check` inside that environment and always print
+installed versions for future diagnosis. They retain all 25 OS/Python
+combinations per workflow and disable matrix fail-fast so that one failure
+does not hide the others.
 
 ## Why these bounds exist
 
