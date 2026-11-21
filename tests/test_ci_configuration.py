@@ -98,6 +98,22 @@ class TestCIConfiguration(unittest.TestCase):
                 for step in job["steps"]:
                     self.assertNotIn("PIP_CONSTRAINT", step.get("env", {}))
 
+    def test_ci_python_environment_is_isolated_from_runner_packages(self):
+        for name, workflow in self.workflows.items():
+            with self.subTest(workflow=name):
+                steps = workflow["jobs"]["build"]["steps"]
+                setup = next(i for i, step in enumerate(steps) if step["name"].startswith("Set up Python "))
+                isolate = next(
+                    i for i, step in enumerate(steps) if step["name"] == "Create isolated Python environment"
+                )
+                self.assertEqual(isolate, setup + 1)
+                script = steps[isolate]["run"]
+                self.assertIn("os.environ['RUNNER_TEMP']", script)
+                self.assertIn("'qlib-venv'", script)
+                self.assertIn("GITHUB_PATH", script)
+                self.assertIn("'Scripts' if os.name == 'nt' else 'bin'", script)
+                self.assertIn("python -m pip check", str(steps))
+
     def test_full_matrix_is_retained_and_failures_are_not_hidden(self):
         for name, workflow in self.workflows.items():
             with self.subTest(workflow=name):
