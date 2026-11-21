@@ -1,15 +1,15 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   release:
+    # A merge or push is not approval to publish packages.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release_please.outputs.release_created }}
