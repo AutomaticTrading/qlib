@@ -1,0 +1,22 @@
+name: AutomaticTrading workflow safety guards
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "tests/security/test_workflow_guards.py"
+
+permissions:
+  contents: read
+
+jobs:
+  source-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout reviewed source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Run dependency-free guard tests
+        run: python -m unittest discover -s tests/security -p 'test_workflow_guards.py' -v
